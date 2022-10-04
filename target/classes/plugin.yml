@@ -1,0 +1,11 @@
+name: PrisonKits
+version: 0.0.1
+main: group.thebasement.plugins.prisonkits.PrisonKits
+api-version: 1.19
+commands:
+  disablepk:
+    description: Disable PK
+    usage: /disablepk
+  kit:
+    description: Get a kit. Defaults to "default" kit.
+    usage: /kit <kit|none>
