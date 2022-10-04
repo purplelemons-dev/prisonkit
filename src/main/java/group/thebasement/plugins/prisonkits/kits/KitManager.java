@@ -8,6 +8,7 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import group.thebasement.plugins.prisonkits.PrisonKits;
 
@@ -40,22 +41,23 @@ public class KitManager {
     }
 
     public int getCooldown(Player player, String kit) {
-        return kits.get(kit).cooldowns.get(player);
+        Kit playerKit = kits.get(kit);
+        return (int) (playerKit.seconds + playerKit.cooldowns.get(player)) / 20;
     }
 
     public boolean giveKit(Player player, String kit) {
         List<Player> players = cooldowns.get(kit);
         if (players.contains(player)) {
-            player.sendMessage("§cYou must wait before using this kit again!");
             return false;
         }
-        int cooldown = kits.get(kit).giveKit(player);
         players.add(player);
-        this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> {
+        BukkitTask cooldown = kits.get(kit).giveKit(player);
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             players.remove(player);
-            player.sendMessage("§aYou can now use the " + kit + " kit again!");
-        }, cooldown * 20);
-
+            cooldown.cancel();
+            // Green message with light blue kit name
+            player.sendMessage("§aYour §b" + kit + "§a kit's cooldown has ended!");
+        }, kits.get(kit).seconds * 20);
         return true;
     }
 
