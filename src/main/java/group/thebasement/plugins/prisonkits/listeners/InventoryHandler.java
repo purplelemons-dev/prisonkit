@@ -21,15 +21,15 @@ public class InventoryHandler implements Listener {
             // event.getCurrentItem().setAmount(-1);
         } else if (event.getInventory().equals(plugin.kitManager.kitInv) && event.getCurrentItem() != null) {
             event.setCancelled(true);
-            if (plugin.kitManager.giveKit((org.bukkit.entity.Player) event.getWhoClicked(),
-                    event.getCurrentItem().getItemMeta().getDisplayName())) {
-                event.getWhoClicked().sendMessage("§aYou have received the §b"
-                        + event.getCurrentItem().getItemMeta().getDisplayName() + " §akit!");
+            String kitname = event.getCurrentItem().getItemMeta().getDisplayName().replaceAll("§.", "").toLowerCase();
+            if (plugin.kitManager.giveKit((org.bukkit.entity.Player) event.getWhoClicked(), kitname)) {
+                event.getWhoClicked()
+                        .sendMessage("§aYou have received " + event.getCurrentItem().getItemMeta().getDisplayName());
             } else {
                 event.getWhoClicked()
                         .sendMessage("§cYou must wait §b"
                                 + plugin.kitManager.getCooldown((org.bukkit.entity.Player) event.getWhoClicked(),
-                                        event.getCurrentItem().getItemMeta().getDisplayName())
+                                        kitname)
                                 + " §cseconds before using this kit again!");
             }
         }

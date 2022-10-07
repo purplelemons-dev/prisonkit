@@ -1,12 +1,9 @@
 package group.thebasement.plugins.prisonkits.commands;
 
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import group.thebasement.plugins.prisonkits.PrisonKits;
 
@@ -25,9 +22,12 @@ public class CommandManager implements CommandExecutor {
             if (args.length == 0) {
                 // Ensure the sender is an operator
                 if (sender.isOp()) {
-                    sender.getServer().broadcastMessage("§cPrisonKits has been disabled!");
+                    sender.getServer().broadcastMessage("§ePrisonKits has been disabled!");
                     // Disable the plugin
                     sender.getServer().getPluginManager().disablePlugin(this.plugin);
+                    return true;
+                } else {
+                    sender.sendMessage("§cYou do not have permission to use this command!");
                     return true;
                 }
             }

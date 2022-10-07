@@ -1,11 +1,8 @@
 package group.thebasement.plugins.prisonkits.kits;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import org.bukkit.Material;
@@ -24,7 +21,7 @@ public class KitManager {
     // Default kit: 1 of each iron tool, 1 of each iron armor, a golden apple, and a
     // stack of steak
     private Map<String, Kit> kits = new HashMap<String, Kit>();
-    private Map<String, List<Player>> cooldowns = new HashMap<String, List<Player>>();
+    private final Map<String, List<Player>> cooldowns = new HashMap<String, List<Player>>();
     public Inventory kitInv;
 
     private final PrisonKits plugin;
@@ -44,21 +41,17 @@ public class KitManager {
         kits.put("overlord monthly", overlordmonthly());
 
         // Empty list of players for each kit
-        cooldowns.put("default", new ArrayList<Player>());
-        cooldowns.put("globalrank", new ArrayList<Player>());
-        cooldowns.put("templar", new ArrayList<Player>());
-        cooldowns.put("inferno", new ArrayList<Player>());
-        cooldowns.put("crusader", new ArrayList<Player>());
-        cooldowns.put("marquis", new ArrayList<Player>());
-        cooldowns.put("pendragon", new ArrayList<Player>());
-        cooldowns.put("goodwill", new ArrayList<Player>());
-        cooldowns.put("holy grail", new ArrayList<Player>());
-        cooldowns.put("overlord monthly", new ArrayList<Player>());
+        System.out.println(cooldowns);
+        List<Player> emptyList = new ArrayList<Player>();
+        for (String kit : kits.keySet()) {
+            cooldowns.put(kit, emptyList);
+        }
+        System.out.println(cooldowns);
 
-        // Generate a 9x6 inventory for the kit selector
-        kitInv = plugin.getServer().createInventory(null, 9 * 6, "Kit Selector");
+        // Generate a 9x5 inventory for the kit selector
+        kitInv = plugin.getServer().createInventory(null, 9 * 5, "Kit Selector");
         // Populate the inventory with nameless gray stained glass panes
-        ItemStack pane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemStack pane = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
         ItemMeta meta = pane.getItemMeta();
         meta.setDisplayName(" ");
         pane.setItemMeta(meta);
@@ -66,11 +59,12 @@ public class KitManager {
             kitInv.setItem(i, pane);
         }
         // Populate the inventory with the kits
-        int i = 0;
+        int i = 10;
         for (String kitName : kits.keySet()) {
-            kitInv.setItem(i * 3 + 10, kits.get(kitName).icon);
-            System.out.println("Adding item " + kitName + " to kitInv at slot " + (i * 3 + 10));
-            i++;
+            kitInv.setItem(i, kits.get(kitName).icon);
+            i = i + 2;
+            if (i % 9 == 0)
+                i++;
         }
     }
 
@@ -93,7 +87,9 @@ public class KitManager {
     }
 
     public boolean giveKit(Player player, String kit) {
+        // The kit name has color codes, so we need to strip them
         List<Player> players = cooldowns.get(kit);
+        System.out.println(cooldowns);
         if (players.contains(player)) {
             return false;
         }
