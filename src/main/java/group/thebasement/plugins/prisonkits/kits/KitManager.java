@@ -1,13 +1,20 @@
 package group.thebasement.plugins.prisonkits.kits;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
 import group.thebasement.plugins.prisonkits.PrisonKits;
@@ -18,6 +25,7 @@ public class KitManager {
     // stack of steak
     private Map<String, Kit> kits = new HashMap<String, Kit>();
     private Map<String, List<Player>> cooldowns = new HashMap<String, List<Player>>();
+    public Inventory kitInv;
 
     private final PrisonKits plugin;
 
@@ -30,6 +38,10 @@ public class KitManager {
         kits.put("inferno", inferno());
         kits.put("crusader", crusader());
         kits.put("marquis", marquis());
+        kits.put("pendragon", pendragon());
+        kits.put("goodwill", goodwill());
+        kits.put("holy grail", holygrail());
+        kits.put("overlord monthly", overlordmonthly());
 
         // Empty list of players for each kit
         cooldowns.put("default", new ArrayList<Player>());
@@ -38,6 +50,41 @@ public class KitManager {
         cooldowns.put("inferno", new ArrayList<Player>());
         cooldowns.put("crusader", new ArrayList<Player>());
         cooldowns.put("marquis", new ArrayList<Player>());
+        cooldowns.put("pendragon", new ArrayList<Player>());
+        cooldowns.put("goodwill", new ArrayList<Player>());
+        cooldowns.put("holy grail", new ArrayList<Player>());
+        cooldowns.put("overlord monthly", new ArrayList<Player>());
+
+        // Generate a 9x6 inventory for the kit selector
+        kitInv = plugin.getServer().createInventory(null, 9 * 6, "Kit Selector");
+        // Populate the inventory with nameless gray stained glass panes
+        ItemStack pane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta meta = pane.getItemMeta();
+        meta.setDisplayName(" ");
+        pane.setItemMeta(meta);
+        for (int i = 0; i < kitInv.getSize(); i++) {
+            kitInv.setItem(i, pane);
+        }
+        // Populate the inventory with the kits
+        int i = 0;
+        for (String kitName : kits.keySet()) {
+            kitInv.setItem(i * 3 + 10, kits.get(kitName).icon);
+            System.out.println("Adding item " + kitName + " to kitInv at slot " + (i * 3 + 10));
+            i++;
+        }
+    }
+
+    private ItemStack makeIcon(String name, Material material, boolean enchanted) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (enchanted) {
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        }
+        // append reset and white codes
+        meta.setDisplayName("§r§f" + name);
+        item.setItemMeta(meta);
+        return item;
     }
 
     public int getCooldown(Player player, String kit) {
@@ -90,7 +137,8 @@ public class KitManager {
                 "default",
                 items,
                 // Cooldown for default kit is 24 hours
-                20,
+                24,
+                makeIcon("Default", Material.STONE_SWORD, false),
                 this.plugin);
     }
 
@@ -102,6 +150,7 @@ public class KitManager {
                 "globalrank",
                 items,
                 86400,
+                makeIcon("Global Rank", Material.BEACON, false),
                 this.plugin);
     }
 
@@ -114,6 +163,7 @@ public class KitManager {
                 "templar",
                 items,
                 86400,
+                makeIcon("Templar", Material.IRON_SWORD, false),
                 this.plugin);
     }
 
@@ -126,6 +176,7 @@ public class KitManager {
                 "inferno",
                 items,
                 86400,
+                makeIcon("Inferno", Material.FIRE_CHARGE, false),
                 this.plugin);
     }
 
@@ -138,6 +189,7 @@ public class KitManager {
                 "crusader",
                 items,
                 86400,
+                makeIcon("Crusader", Material.CHAINMAIL_CHESTPLATE, false),
                 this.plugin);
     }
 
@@ -150,6 +202,59 @@ public class KitManager {
                 "marquis",
                 items,
                 86400,
+                makeIcon("Marquis", Material.SHIELD, false),
+                this.plugin);
+    }
+
+    // Pendragon kit: copy globalRank
+    private final Kit pendragon() {
+        ItemStack slab = new ItemStack(Material.STONE_SLAB);
+        slab.setAmount(1);
+        ItemStack[] items = { slab };
+        return new Kit(
+                "pendragon",
+                items,
+                86400,
+                makeIcon("Pendragon", Material.DRAGON_HEAD, false),
+                this.plugin);
+    }
+
+    // Goodwill kit: copy globalRank
+    private final Kit goodwill() {
+        ItemStack slab = new ItemStack(Material.STONE_SLAB);
+        slab.setAmount(1);
+        ItemStack[] items = { slab };
+        return new Kit(
+                "goodwill",
+                items,
+                86400,
+                makeIcon("Goodwill", Material.MUSHROOM_STEW, false),
+                this.plugin);
+    }
+
+    // Holy Grail kit: copy globalRank
+    private final Kit holygrail() {
+        ItemStack slab = new ItemStack(Material.STONE_SLAB);
+        slab.setAmount(1);
+        ItemStack[] items = { slab };
+        return new Kit(
+                "holygrail",
+                items,
+                86400,
+                makeIcon("Holy Grail", Material.GOLD_NUGGET, false),
+                this.plugin);
+    }
+
+    // Overlord Monthly kit: copy globalRank
+    private final Kit overlordmonthly() {
+        ItemStack slab = new ItemStack(Material.STONE_SLAB);
+        slab.setAmount(1);
+        ItemStack[] items = { slab };
+        return new Kit(
+                "overlord",
+                items,
+                86400,
+                makeIcon("Overlord", Material.ENDER_CHEST, false),
                 this.plugin);
     }
 

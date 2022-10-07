@@ -15,12 +15,14 @@ public class Kit {
     private final ItemStack[] items;
     public final int seconds;
     public final Map<Player, Integer> cooldowns = new HashMap<Player, Integer>();
+    public final ItemStack icon;
     private final PrisonKits plugin;
 
-    public Kit(String name, ItemStack[] items, int seconds, PrisonKits plugin) {
+    public Kit(String name, ItemStack[] items, int seconds, ItemStack icon, PrisonKits plugin) {
         this.name = "default";
         this.items = items;
         this.seconds = seconds;
+        this.icon = icon;
         this.plugin = plugin;
     }
 

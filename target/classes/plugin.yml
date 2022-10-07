@@ -9,3 +9,6 @@ commands:
   kit:
     description: Get a kit. Defaults to "default" kit.
     usage: /kit <kit|none>
+  test:
+    description: Test command
+    usage: /test
